@@ -1,9 +1,0 @@
-.popup__container_type_auth {
-  height: 330px;
-}
-
-@media screen and (max-width: 430px) {
-  .popup__container_type_auth {
-    height: 308px;
-  }
-}
