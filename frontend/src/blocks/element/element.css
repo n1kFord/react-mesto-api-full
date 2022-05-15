@@ -1,0 +1,21 @@
+.element {
+  width: 282px;
+  height: 361px;
+  margin: 20px 0 0 17px;
+  padding: 0;
+  border-radius: 10px;
+  position: relative;
+  background-color: white;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.element:nth-child(1n + 1) {
+  margin-left: 0;
+}
+
+@media screen and (max-width: 940px) {
+  .element {
+    margin-left: 0;
+  }
+}

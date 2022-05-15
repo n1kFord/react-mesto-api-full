@@ -1,0 +1,9 @@
+.auth__button_type_reg {
+    margin-bottom: 0;
+  }
+  
+  @media screen and (max-width: 430px) {
+    .auth__button_type_reg {
+      margin-bottom: 0;
+    }
+  }

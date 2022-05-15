@@ -1,0 +1,7 @@
+.popup_opened {
+  display: flex;
+  height: 100%;
+  transition-delay: 0s, 0s;
+  z-index: 200;
+  opacity: 1;
+}
