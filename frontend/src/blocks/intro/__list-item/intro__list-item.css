@@ -1,0 +1,24 @@
+.intro__list-item{
+    padding: 0;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: white;
+}
+
+@media screen and (max-width:690px){
+    .intro__list-item{
+        font-size: 16px;
+        line-height: 22px;
+    }
+}
+
+@media screen and (max-width:355px){
+    .intro__list-item{
+        font-size: 12px;
+        line-height: 18px;
+    }
+}

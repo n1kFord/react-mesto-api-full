@@ -1,0 +1,13 @@
+.popup__button_type_inactive{
+    border: 1px solid gray;
+    background-color: transparent;
+    color: gray;
+    cursor: default;
+}
+
+.popup__button_type_inactive:hover{
+    cursor: default;
+    border: 1px solid gray;
+    background-color: transparent;
+    color: gray;
+} /* сделано так, поскольку hover из popup__button мешает при заблокированной кнопке */

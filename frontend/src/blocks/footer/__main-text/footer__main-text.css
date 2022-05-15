@@ -1,0 +1,16 @@
+.footer__main-text{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+@media screen and (max-width: 675px){
+    .footer__main-text{
+        flex-wrap: wrap;
+    }
+}
+@media screen and (max-width: 575px){
+    .footer__main-text{
+        flex-direction: column;
+    }
+}
