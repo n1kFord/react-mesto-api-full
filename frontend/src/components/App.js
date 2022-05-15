@@ -121,7 +121,6 @@ function App() {
     auth
       .register(info.email, info.password)
       .then((res) => {
-        console.log(res);
         if (res.email) {
           showStatus(true);
           navigate("/sign-in");
@@ -143,7 +142,6 @@ function App() {
           auth
             .checkToken(token)
             .then((info) => {
-              console.log(info);
               setCurrentEmail(info.data.email);
               setLoggedIn(true);
             })
@@ -174,7 +172,6 @@ function App() {
     api
       .setInfoAboutUser(newUserInfo, token)
       .then((res) => {
-        console.log(res);
         setCurrentUser({
           ...currentUser,
           name: res.data.name,
@@ -240,7 +237,6 @@ function App() {
   function handleAddPlaceSubmit(card) {
     setIsCardAddPopupLoading(true);
     let token = localStorage.getItem("jwt");
-    console.log(token);
     api
       .addNewCard(card, token)
       .then((newCard) => {
