@@ -15,6 +15,7 @@ backend/node_modules
 # Optional REPL history
 frontend/.DS_Store
 backend/.DS_Store
+.idea
 frontend/.idea
 backend/.idea
 frontend/.vscode
