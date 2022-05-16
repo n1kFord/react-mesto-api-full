@@ -5,6 +5,8 @@ require('dotenv').config();
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
+const ConflictError = require('../errors/conflict-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -30,8 +32,8 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!validator.isEmail(email)) {
-    next(new BadRequestError('Ошибка: неккоректный e-mail.'));
+  if (!validator.isEmail(email) || !password) {
+    next(new BadRequestError('Ошибка: данные переданы неккоректно.'));
   } else {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
@@ -42,7 +44,13 @@ module.exports.createUser = (req, res, next) => {
           name: user.name, about: user.about, avatar: user.avatar, email: user.email,
         });
       })
-      .catch(next);
+      .catch((err) => {
+        if (err.code === 11000) {
+          next(new ConflictError('Ошибка: пользователь с таким e-mail уже существует.'));
+        } else {
+          next(err);
+        }
+      });
   }
 };
 
@@ -91,6 +99,12 @@ module.exports.login = (req, res, next) => {
         const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-dev-secret', { expiresIn: '7d' });
         res.send({ token });
       })
-      .catch(next);
+      .catch((err) => {
+        if (err.message === 'Ошибка: Неправильные почта или пароль.') {
+          next(new UnauthorizedError(err.message));
+        } else {
+          next(new BadRequestError(('Ошибка: данные переданы неккоректно.')));
+        }
+      });
   }
 };

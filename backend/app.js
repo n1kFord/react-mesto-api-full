@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const {
   celebrate, Joi, errors,
 } = require('celebrate');
+const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/not-found-error');
 
@@ -22,8 +24,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(requestLogger);
+app.use(helmet());
 
-// eslint-disable-next-line consistent-return
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   const { method } = req;
@@ -34,16 +36,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', requestHeaders);
     return res.end();
   }
-  next();
-});
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('server crashing');
-  }, 0);
+  return next();
 });
 
 app.post('/signin', celebrate({
@@ -57,13 +50,24 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
     about: Joi.string().min(2).max(30).default('Исследователь'),
     avatar: Joi.string()
-    // eslint-disable-next-line no-useless-escape
+      // eslint-disable-next-line no-useless-escape
       .regex(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&amp;\/=]*)/)
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 }), createUser);
+
+app.use(auth);
+
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('server crashing');
+  }, 0);
+});
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Ошибка: данный ресурс не найден.'));
@@ -73,18 +77,10 @@ app.use(errorLogger);
 
 app.use(errors());
 
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  if (err.code === 11000) {
-    res.status(409).send({ message: 'Ошибка: пользователь с таким e-mail уже существует.' });
-  } else if (err.name === 'ValidationError' || err.name === 'CastError' || err.name === 'TypeError') {
-    res.status(400).send({ message: 'Ошибка: данные переданы неккоректно' });
-  } else if (err.message === 'Ошибка: Неправильные почта или пароль.') {
-    res.status(401).send({ message: err.message });
-  } else {
-    res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка: что-то пошло не так.' : message });
-  }
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка: что-то пошло не так.' : message });
+  next();
 });
 
 app.listen(PORT);

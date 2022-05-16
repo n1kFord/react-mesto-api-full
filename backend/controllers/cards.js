@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const ForbiddenError = require('../errors/forbidden-error');
+const BadRequestError = require('../errors/bad-request-error');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -10,9 +11,13 @@ module.exports.getCards = (req, res, next) => {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
-    .catch(next);
+  if (!name || !link) {
+    next(new BadRequestError('Ошибка: данные переданы неккоректно.'));
+  } else {
+    Card.create({ name, link, owner: req.user._id })
+      .then((card) => res.send({ data: card }))
+      .catch(next);
+  }
 };
 
 module.exports.deleteCardById = (req, res, next) => {
